@@ -1,0 +1,14 @@
+p {
+    padding:10px;
+    background-color: pink;
+    color: red;
+    animation: color-change-warning 1s infinite;
+    font-weight: bold;
+    font-size: large
+}
+
+@keyframes color-change-warning {
+  0% { color: red; }
+  50% { color: darkred; }
+  100% { color: red; }
+}

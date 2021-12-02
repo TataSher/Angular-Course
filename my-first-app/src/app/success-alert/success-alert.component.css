@@ -1,0 +1,13 @@
+p {
+  padding: 10px;
+  background-color: lightgreen;
+  animation: color-change 2s infinite;
+  font-weight: bold;
+  font-size: large
+}
+
+@keyframes color-change {
+  0% { color: green; }
+  50% { color: yellow; }
+  100% { color: green; }
+}
