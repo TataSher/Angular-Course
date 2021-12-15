@@ -1,17 +1,40 @@
-import { EventEmitter } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
+import { Ingredient } from "../shared/ingredient.model";
+import { ShoppingListService } from "../shopping-list/shopping-list.service";
 import { Recipe } from "./recipe.model";
+
+@Injectable()
 
 export class RecipeService {
     recipeSelected = new EventEmitter<Recipe>();
     // we make recipes private so the array could only be accessed via getRecipes method
     private recipes: Recipe[] = [
-    new Recipe('Test Recipe 1', 'Very Tasty', 'https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg?quality=90&resize=556,505'),
-    new Recipe('Test Recipe 2', 'Very Tasty', 'https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg?quality=90&resize=556,505')
+    new Recipe('Tasty Schnitzel',
+      'Very Tasty',
+      'https://www.thespruceeats.com/thmb/cckc3_4QUQ79kSFhcLPM8xg9F3g=/3797x2848/smart/filters:no_upscale()/wiener-schnitzel-recipe-1447089-Hero-5b587d6c46e0fb0071b0059d.jpg',
+      [
+        new Ingredient('Meat', 1),
+        new Ingredient('French fries', 20)
+      ]),
+    new Recipe(
+      'Burger',
+      'Very Tasty',
+      'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/boom-burger-1518627283.jpg?crop=1.00xw:0.753xh;0,0.200xh&resize=1200:*',
+      [
+        new Ingredient('Buns', 2),
+        new Ingredient('Meat', 2)
+      ])
   ];
+
+  constructor(private shoppingListService: ShoppingListService){}
 
   getRecipes() {
       // below returns a copy of the recipes array
       return this.recipes.slice();
+  }
+
+  addIngredientsToShoppingList(ingredients: Ingredient[]) {
+    this.shoppingListService.addIngridients(ingredients);
   }
 
 }
