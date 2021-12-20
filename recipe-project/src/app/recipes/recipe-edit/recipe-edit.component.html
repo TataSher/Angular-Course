@@ -3,8 +3,14 @@
         <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
             <div class="row">
                 <div class="col-xs-12">
-                    <button type="submit" class="btn btn-success">Save</button>
-                    <button type="button" class="btn btn-danger">Cancel</button>
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                        [disabled]="!recipeForm.valid">Save</button>
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        (click)="onCancel()">Cancel</button>
                 </div>
             </div>
             <div class="row">
@@ -27,14 +33,15 @@
                             type="text"
                             id="imagePath"
                             class="form-control"
-                            formControlName="imagePath">
+                            formControlName="imagePath"
+                            #imagePath>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="form-group">
-                        <img src="" class="img-responsive">
+                        <img [src]="imagePath.value" class="img-responsive">
                     </div>
                 </div>
             </div>
@@ -56,7 +63,8 @@
                     <div
                         class="row"
                         *ngFor="let ingredientCtrl of controls; let i = index"
-                        [formGroupName]="i">
+                        [formGroupName]="i"
+                        style="margin-top: 10px">
                         <div class="col-xs-8">
                             <input
                                 type="text"
@@ -70,7 +78,21 @@
                                 formControlName = "amount">
                         </div>
                             <div class="col-xs-2">
-                            <button id="xButton" class="btn btn-danger">X</button>
+                            <button
+                                id="xButton"
+                                class="btn btn-danger"
+                                type="button"
+                                (click)="onDeleteIngredient(i)"
+                                >X</button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button
+                                class="btn btn-success"
+                                type="button"
+                                (click)="onAddIngredient()">Add Ingredient</button>
                         </div>
                     </div>
                 </div>
