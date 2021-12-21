@@ -1,32 +1,62 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+
+import { Post } from './post.model';
+import { PostsService } from './posts.service';
+import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
-  loadedPosts = [];
+export class AppComponent implements OnInit, OnDestroy {
+  loadedPosts: Post[] = [];
+  isFetching: boolean = false;
+  error = null
+  private errorSub: Subscription;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+              private postsService: PostsService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.errorSub = this.error.subscribe(errorMessage => {
+       this.error = errorMessage
+     });
+     this.fetchPostsHelper();
+  }
 
-  onCreatePost(postData: { title: string; content: string }) {
-    this.http.post(
-      'https://angular-project-80b1b-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
-      postData)
-      .subscribe(responseData => {
-        console.log(responseData)
-      })
+  onCreatePost(postData: Post) {
+    this.postsService.createAndStorePost(postData.title, postData.content);
   }
 
   onFetchPosts() {
-    // Send Http request
+   this.fetchPostsHelper();
+  
   }
 
   onClearPosts() {
-    // Send Http request
+    this.postsService.clearPosts()
+        .subscribe(() => {
+              this.loadedPosts=[];
+            });
   }
+
+  private fetchPostsHelper(){
+    this.isFetching = true;
+    this.postsService.fetchPosts()
+      .subscribe(posts => {
+        this.isFetching = false;
+        this.loadedPosts = posts;
+      }, error => {
+        console.log(error)
+        this.error = error.message;
+      });
+  }
+
+  ngOnDestroy() {
+      this.errorSub.unsubscribe()
+  }
+
 }
