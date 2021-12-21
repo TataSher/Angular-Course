@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Subject } from "rxjs";
-import { map } from 'rxjs/operators';
+import { Subject, throwError } from "rxjs";
+import { map, catchError } from 'rxjs/operators';
 
 import { Post } from "./post.model";
 
@@ -27,16 +27,22 @@ export class PostsService{
     fetchPosts(){
         return this.http
             .get<{ [key: string]: Post }>('https://angular-project-80b1b-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
-            .pipe(map(responseData => {
-                console.log(responseData)
-                 const postsArray: Post[] = [];
-                for (const key in responseData) {
-                     if (responseData.hasOwnProperty(key)) {
-                        postsArray.push({ ...responseData[key], id: key });
-                    }  
-                }
-            return postsArray
-        }))
+            .pipe(
+                map(responseData => {
+                    console.log(responseData)
+                    const postsArray: Post[] = [];
+                    for (const key in responseData) {
+                        if (responseData.hasOwnProperty(key)) {
+                            postsArray.push({ ...responseData[key], id: key });
+                        }  
+                    }   
+                    return postsArray
+                }),
+                catchError(errorRes => {
+                    // send to analytics server
+                    return throwError(errorRes);
+                })
+            )
     }
 
     clearPosts(){
