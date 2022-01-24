@@ -1,7 +1,7 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpEventType, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Subject, throwError } from "rxjs";
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 
 import { Post } from "./post.model";
 
@@ -15,7 +15,10 @@ export class PostsService{
         const postData: Post = {title: title, content: content}
         this.http.post<{ name: string }>(
             'https://angular-project-80b1b-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
-            postData)
+            postData,
+            {
+                observe: 'response'
+            })
             .subscribe(responseData => {
                 console.log(responseData)
             },
@@ -25,11 +28,22 @@ export class PostsService{
     }
 
     fetchPosts(){
+        let searchParams = new HttpParams();
+        searchParams = searchParams.append('print','pretty');
+        searchParams = searchParams.append('custom', 'key');
+
         return this.http
-            .get<{ [key: string]: Post }>('https://angular-project-80b1b-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
+            .get<{ [key: string]: Post }>(
+                'https://angular-project-80b1b-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+                {
+                    headers: new HttpHeaders({"Custom-Header": "Hello"}),
+                    // params: new HttpParams().set('print', 'pretty')
+                    params: searchParams,
+                    responseType: 'json'
+                }
+            )
             .pipe(
                 map(responseData => {
-                    console.log(responseData)
                     const postsArray: Post[] = [];
                     for (const key in responseData) {
                         if (responseData.hasOwnProperty(key)) {
@@ -47,6 +61,19 @@ export class PostsService{
 
     clearPosts(){
         return this.http
-            .delete('https://angular-project-80b1b-default-rtdb.europe-west1.firebasedatabase.app/posts.json');   
+            .delete('https://angular-project-80b1b-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+            {
+                observe: 'events',
+                responseType: 'text' // could be number, blob, etc
+            }
+        ).pipe(tap(event => {
+            console.log(event);
+            if (event.type === HttpEventType.Sent) {
+                //...
+            }
+            if (event.type === HttpEventType.Response) {
+                console.log(event.body)
+            }
+        }));
     }
 }
