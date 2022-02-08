@@ -1,15 +1,27 @@
 import { Ingredient } from "../../shared/ingredient.model";
 import * as ShoppingListActions from './shopping-list.actions';
 
-const initialState = {
+export interface State {
+    ingredients: Ingredient[];
+    editedIngredient: Ingredient;
+    editedIngredientIndex: number;
+}
+
+export interface AppState {
+  shoppingList: State;
+}
+
+const initialState: State = {
     ingredients: [
         new Ingredient("Apple", 3),
         new Ingredient("Pear", 2)
-    ]
+    ],
+    editedIngredient: null,
+    editedIngredientIndex: -1
 };
 
 export function shoppingListReducer(
-    state = initialState,
+    state: State = initialState,
     action: ShoppingListActions.ShoppingListActions
 ) {
     switch (action.type) {
@@ -25,10 +37,7 @@ export function shoppingListReducer(
                 ingredients: [...state.ingredients, ...action.payload]
             } 
         case ShoppingListActions.UPDATE_INGREDIENT:
-            console.log(state)
-            console.log(action.payload)
             const ingredient = state.ingredients[action.payload.index];
-            console.log(action.payload.newIngredient)
             const updatedIngredient = {
                 ...ingredient,
                 ...action.payload.newIngredient
