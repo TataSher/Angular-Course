@@ -5,6 +5,8 @@ export const AUTHENTICATE_SUCCESS = '[Auth] Authenticate';
 export const AUTHENTICATE_FAIL = '[Auth] Authenticate Fail';
 export const SIGNUP_START = '[Auth] Signup Start';
 export const SIGNUP = '[Auth] Signup';
+export const AUTO_LOGIN = '[Auth] Auto Login';
+export const CLEAR_ERROR = '[Auth] Clear Error'
 export const LOGOUT = '[Auth] Logout';
 
 export class AuthenticateSuccess implements Action {
@@ -16,6 +18,10 @@ export class AuthenticateSuccess implements Action {
         token: string,
         expirationDate: Date
     }) {}
+}
+
+export class AutoLogin implements Action {
+    readonly type = AUTO_LOGIN;
 }
 
 export class Logout implements Action {
@@ -40,5 +46,16 @@ export class SignupStart implements Action {
   constructor(public payload: { email: string; password: string }){}
 }
 
+export class ClearError implements Action {
+    readonly type = CLEAR_ERROR;
+}
 
-export type AuthActions = AuthenticateSuccess | Logout | LoginStart | AuthenticateFail | SignupStart
+export type AuthActions =
+  | AuthenticateSuccess
+  | LoginStart
+  | Logout
+  | AutoLogin
+  | AuthenticateFail
+  | SignupStart
+  | ClearError;
+    
